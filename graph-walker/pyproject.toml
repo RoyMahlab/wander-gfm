@@ -1,0 +1,4 @@
+[build-system]
+# setup.py imports pybind11 at build time, so it must be a build requirement.
+requires = ["setuptools>=64", "wheel", "pybind11>=3.0.0"]
+build-backend = "setuptools.build_meta"

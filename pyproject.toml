@@ -1,0 +1,41 @@
+[project]
+name = "wander"
+version = "0.1.0"
+description = "To Learn is to Wander: Learning Across Graphs and Tasks with Random Walks"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # Core ML (training, eval, multi-GPU DDP via torch.distributed.run)
+    "torch>=2.0.0",
+    "numpy>=1.24.0",
+    "nvidia-nccl-cu13>=2.28.0",
+    # Graph neural networks and graph utilities
+    "torch_geometric>=2.7.0",  # CityNetwork (City-Networks NC datasets) added in 2.7.0
+    "networkx>=3.0",
+    "scipy>=1.10.0",
+    "scikit-learn>=1.2.0",
+    # Dataset loading / preprocessing
+    "pandas>=2.0.0",
+    "PyYAML>=6.0",
+    "xgboost>=2.0.0",
+    "rdflib>=6.0.0",
+    "ogb>=1.3.6",
+    # Fast random walks (vendored C++ extension, see [tool.uv.sources])
+    "pybind11>=3.0.0",
+    "graph-walker",
+    # Experiment tracking (used by main.py / SLURM training scripts)
+    "wandb>=0.15.0",
+]
+
+[project.optional-dependencies]
+# Table 6 MiniLM node-feature caches.
+minilm = ["sentence-transformers>=2.2.0"]
+# --prior_config nodepfn and scripts/priors NodePFN metrics.
+priors = ["ConfigSpace>=0.4.21", "gpytorch>=1.11"]
+
+[tool.uv]
+# The repo is run as scripts (main.py, slurm_scripts/), not installed as a package.
+package = false
+
+[tool.uv.sources]
+graph-walker = { path = "graph-walker", editable = true }

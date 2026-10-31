@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Submit a job script. Uses sbatch when available; otherwise runs locally.
+# SUBMIT_LOCAL=1 forces a local run even when sbatch is installed.
 #
 #   bash slurm_scripts/submit.sh slurm_scripts/eval/eval_one_dataset.sh CORA
 #   SLURM_PARTITION=gpu SLURM_GRES=gpu:1 bash slurm_scripts/submit.sh ...
@@ -39,9 +40,26 @@ if [[ "${JOB_BASE}" == queue_*.sh || "${JOB_BASE}" == submit_*.sh ]]; then
   exec bash "${JOB_SCRIPT}" "$@"
 fi
 
-if ! command -v sbatch >/dev/null 2>&1; then
-  echo "sbatch not found; running locally: bash ${JOB_SCRIPT} $*"
+# Local runs ignore #SBATCH --output, so tee stdout/stderr into logs/ instead.
+run_local() {
+  local name log_dir log_file
+  name="${SLURM_JOB_NAME:-$(basename "${JOB_SCRIPT}" .sh)${1:+-$1}}"
+  name="${name//\//_}"
+  log_dir="${LOGS_DIR:-${SCRIPT_DIR}/../logs}"
+  mkdir -p "${log_dir}"
+  log_file="$(cd "${log_dir}" && pwd)/local_${name}_$(date +%Y%m%d_%H%M%S)_$$.log"
+  echo "Running locally: bash ${JOB_SCRIPT} $*"
+  echo "Log: ${log_file}"
+  exec > >(tee -a "${log_file}") 2>&1
   exec bash "${JOB_SCRIPT}" "$@"
+}
+
+if [[ "${SUBMIT_LOCAL:-0}" == "1" || "${SUBMIT_LOCAL:-0}" == "true" ]]; then
+  run_local "$@"
+fi
+if ! command -v sbatch >/dev/null 2>&1; then
+  echo "sbatch not found."
+  run_local "$@"
 fi
 
 KIND="$(cluster_job_kind "${JOB_SCRIPT}")"

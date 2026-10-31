@@ -98,6 +98,9 @@ maybe_load_conda_module
 if [[ -x "${CONDA_PREFIX:-}/bin/python" ]] && \
    { [[ "${CONDA_DEFAULT_ENV:-}" == "${CONDA_ENV}" ]] || [[ "${CONDA_PREFIX}" == */"${CONDA_ENV}" ]]; }; then
   PYTHON="${CONDA_PREFIX}/bin/python"
+elif [[ -x "${UV_VENV:-${REPO_ROOT}/.venv}/bin/python" ]]; then
+  # uv environment (uv sync)
+  PYTHON="${UV_VENV:-${REPO_ROOT}/.venv}/bin/python"
 elif command -v conda >/dev/null 2>&1; then
   CONDA_BASE="$(conda info --base)"
   # shellcheck source=/dev/null
@@ -107,7 +110,7 @@ elif command -v conda >/dev/null 2>&1; then
 elif command -v python >/dev/null 2>&1; then
   PYTHON="$(command -v python)"
 else
-  echo "ERROR: no Python found. Create/activate the '${CONDA_ENV}' env (see README)." >&2
+  echo "ERROR: no Python found. Run 'uv sync' or create/activate the '${CONDA_ENV}' conda env (see README)." >&2
   exit 1
 fi
 

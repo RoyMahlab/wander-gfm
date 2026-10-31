@@ -7,11 +7,17 @@ wandb/
 notebooks/
 */__pycache__/
 *.pyc
+.venv/
+*.so
+*.egg-info/
+build/
 
 # GraphPFN eval dumps next to generated TOML
 baselines/graphpfn/configs/**/evaluation/
 baselines/graphpfn/configs/**/tuning/
 *.toml
+!pyproject.toml
+!**/pyproject.toml
 
 # Third-party runtime artifacts (submodule gitlinks stay tracked)
 third_party/**/data/

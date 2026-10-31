@@ -51,6 +51,11 @@ find_env_python() {
     printf '%s' "${override}"
     return 0
   fi
+  # uv environment (uv sync) stands in for the main 'wander' env.
+  if [[ "${env_name}" == "${CONDA_ENV:-wander}" && -x "${UV_VENV:-${REPO_ROOT}/.venv}/bin/python" ]]; then
+    printf '%s' "${UV_VENV:-${REPO_ROOT}/.venv}/bin/python"
+    return 0
+  fi
 
   local roots=()
   if [[ -n "${CONDA_PREFIX:-}" ]]; then

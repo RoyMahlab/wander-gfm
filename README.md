@@ -10,6 +10,17 @@ and place it at `checkpoints/pretrained_wander/pretrained_wander.pt`.
 
 ## Install
 
+With [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv sync                      # add --extra minilm / --extra priors (or --all-extras) as needed
+mkdir -p logs raw_data checkpoints results/eval
+```
+
+This creates `.venv/` in the repo root. Run things with `uv run python main.py ...` or activate `.venv`. The SLURM scripts pick up `.venv/` automatically when no `wander` conda env is active (override the location with `UV_VENV`).
+
+Or with conda:
+
 ```bash
 conda create -n wander python=3.11 pip -y
 conda activate wander
@@ -19,7 +30,7 @@ mkdir -p logs raw_data checkpoints results/eval
 
 `graph-walker` builds a C++ extension, so `g++` and Python headers must be available. Evaluation and training expect an NVIDIA GPU. Optional W&B: `WANDB_MODE=disabled`, or `wandb login`.
 
-`submit.sh` uses `sbatch` when it exists and otherwise runs the job locally. Queue scripts (`queue_*.sh`) always run in the current shell and submit one job per dataset; do not `sbatch` them. Edit the `#SBATCH` headers for your site, or set `SLURM_PARTITION`, `SLURM_GRES`, `SLURM_NUM_GPUS`, `CLUSTER_MEM`, and `CONDA_ENV` (default `wander`). Append `--dry-run` to a queue script to print the jobs without launching them.
+`submit.sh` uses `sbatch` when it exists and otherwise runs the job locally; set `SUBMIT_LOCAL=1` to run locally even when `sbatch` is installed. Local runs print to the terminal and also write `logs/local_<job>_<timestamp>_<pid>.log`. Queue scripts (`queue_*.sh`) always run in the current shell and submit one job per dataset; do not `sbatch` them. Edit the `#SBATCH` headers for your site, or set `SLURM_PARTITION`, `SLURM_GRES`, `SLURM_NUM_GPUS`, `CLUSTER_MEM`, and `CONDA_ENV` (default `wander`). Append `--dry-run` to a queue script to print the jobs without launching them.
 
 A small check:
 
