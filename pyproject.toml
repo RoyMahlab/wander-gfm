@@ -25,6 +25,7 @@ dependencies = [
     "graph-walker",
     # Experiment tracking (used by main.py / SLURM training scripts)
     "wandb>=0.15.0",
+    "loguru>=0.7.3",
 ]
 
 [project.optional-dependencies]

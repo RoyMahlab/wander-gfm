@@ -9,6 +9,12 @@
 #
 # Leave these unset to use the #SBATCH lines in the job script.
 
+# Local runs (no Slurm job): default to one process per CUDA_VISIBLE_DEVICES entry.
+if [[ -z "${SLURM_NUM_GPUS:-}" && -z "${SLURM_JOB_ID:-}" && -n "${CUDA_VISIBLE_DEVICES:-}" ]]; then
+  IFS=',' read -r -a _visible_gpus <<< "${CUDA_VISIBLE_DEVICES}"
+  SLURM_NUM_GPUS="${#_visible_gpus[@]}"
+  unset _visible_gpus
+fi
 SLURM_NUM_GPUS="${SLURM_NUM_GPUS:-1}"
 NPROC_PER_NODE="${NPROC_PER_NODE:-${SLURM_NUM_GPUS}}"
 

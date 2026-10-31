@@ -10,6 +10,7 @@ import threading
 import time
 from collections import deque
 from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
+from loguru import logger
 from typing import Iterator, List, Optional, Tuple, Union
 
 import numpy as np
@@ -312,7 +313,7 @@ class SyntheticGraphLoader:
 
     def _log_queue_wait(self, wait_s: float) -> None:
         if wait_s > 1e-3:
-            print(
+            logger.info(
                 f"[SyntheticGraphLoader] queue empty (epoch {self._epoch}); "
                 f"waited {wait_s:.4f}s",
                 flush=True,
